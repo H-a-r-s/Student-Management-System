@@ -61,7 +61,10 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         userRepository.save(user);
+        String token = jwtService.generateToken(user);
 
-        return new AuthResponse("Registered successfully as " + role);
+
+
+        return new AuthResponse("Registered successfully as " + role +". Token : " + token);
     }
 }

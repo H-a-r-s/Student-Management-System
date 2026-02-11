@@ -3,7 +3,7 @@ package com.harsh.Course_Service.service;
 import com.harsh.Course_Service.dto.CourseRequestDto;
 import com.harsh.Course_Service.dto.CourseResponseDto;
 import com.harsh.Course_Service.entity.Course;
-import com.harsh.Course_Service.exception.CourseNotFoundException;
+import com.harsh.Course_Service.exception.ResourceNotFoundException;
 import com.harsh.Course_Service.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -33,7 +33,7 @@ public class CourseServiceImpl implements CourseService{
     public CourseResponseDto getCourseById(Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(
-                        () -> new CourseNotFoundException("Course not found with id: "+ id)
+                        () -> new ResourceNotFoundException("Course not found with id: "+ id)
                 );
         return modelMapper.map(course, CourseResponseDto.class);
     }
@@ -50,9 +50,38 @@ public class CourseServiceImpl implements CourseService{
     public CourseResponseDto getCourseByCode(String code) {
         Course course = courseRepository.findByCode(code)
                 .orElseThrow(() ->
-                        new RuntimeException("Course not found with code: " + code)
+                        new ResourceNotFoundException("Course not found with code: " + code)
                 );
 
         return modelMapper.map(course, CourseResponseDto.class);
+    }
+
+    @Override
+    public void deleteCourse(Long id) {
+        if (!courseRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Course not found with id: " + id);
+        }
+        courseRepository.deleteById(id);
+    }
+
+    @Override
+    public CourseResponseDto updateCourse(Long id, CourseRequestDto request) {
+        Course existing = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+
+        existing.setTitle(request.getTitle());
+        existing.setCode(request.getCode());
+        existing.setStudentId(request.getStudentId());
+
+        Course saved = courseRepository.save(existing);
+        return modelMapper.map(saved, CourseResponseDto.class);
+    }
+
+    @Override
+    public List<CourseResponseDto> getCoursesByStudent(Long studentId) {
+        return courseRepository.findByStudentId(studentId)
+                .stream()
+                .map(c -> modelMapper.map(c, CourseResponseDto.class))
+                .toList();
     }
 }

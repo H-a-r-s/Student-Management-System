@@ -15,4 +15,9 @@ public interface CourseService {
 
     CourseResponseDto getCourseByCode(String code);
 
+    void deleteCourse(Long id);
+
+    CourseResponseDto updateCourse(Long id, CourseRequestDto request);
+
+    List<CourseResponseDto> getCoursesByStudent(Long studentId);
 }

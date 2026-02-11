@@ -24,16 +24,13 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ Public endpoints (no token)
                         .requestMatchers("/actuator/**").permitAll()
 
-                        // ✅ ADMIN only
                         .requestMatchers(HttpMethod.DELETE, "/api/attendance/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/attendance/**").hasRole("ADMIN")
 
-                        // ✅ Any authenticated user (USER/ADMIN)
                         .requestMatchers("/api/attendance/**").authenticated()
 
-                        // ✅ others
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
