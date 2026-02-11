@@ -1,7 +1,13 @@
 package com.harsh.Student_Service.controller;
+import com.harsh.Student_Service.dto.StudentRequestDto;
+import com.harsh.Student_Service.dto.StudentResponseDto;
 import com.harsh.Student_Service.entity.Student;
 import com.harsh.Student_Service.repository.StudentRepository;
+import com.harsh.Student_Service.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,21 +17,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentController {
 
-    private final StudentRepository studentRepository;
+    private final StudentService studentService;
 
     @PostMapping
-    public Student createStudent(@RequestBody Student student){
-        return studentRepository.save(student);
+    public ResponseEntity<StudentResponseDto> createStudent(@Valid @RequestBody StudentRequestDto requestDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(requestDto));
     }
 
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public ResponseEntity<List<StudentResponseDto>> getAllStudents() {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
     }
 
     @GetMapping("/{id}")
-    public Student getStudentById(@PathVariable Long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+    public ResponseEntity<StudentResponseDto> getStudentById(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.getStudentById(id));
     }
 }
