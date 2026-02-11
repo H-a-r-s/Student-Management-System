@@ -7,6 +7,7 @@ import com.harsh.Attendance_Service.service.AttendanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -58,6 +59,7 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.updateAttendance(id, present));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteAttendance(@PathVariable Long id) {
         attendanceService.deleteAttendance(id);
